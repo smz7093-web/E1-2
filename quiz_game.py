@@ -1,8 +1,11 @@
+from default_quizzes import get_default_quizzes
+
+
 class QuizGame:
     """게임 전체(메뉴, 진행, 저장)를 관리하는 클래스"""
 
     def __init__(self):
-        self.quizzes = []          # 퀴즈 목록 (list)
+        self.quizzes = get_default_quizzes()   # 퀴즈 목록 (list of Quiz)
         self.best_score = None     # 최고 점수 (아직 없으면 None)
 
     # ---------- 입력 처리 ----------
