@@ -43,7 +43,7 @@ class QuizGame:
             self.show_menu()
             choice = self.get_number("선택: ", 1, 5)
             if choice == 1:
-                print("(준비 중) 퀴즈 풀기")
+                self.play()
             elif choice == 2:
                 print("(준비 중) 퀴즈 추가")
             elif choice == 3:
@@ -53,3 +53,25 @@ class QuizGame:
             else:
                 print("👋 게임을 종료합니다. 안녕히 가세요!")
                 break
+
+    # ---------- 기능 ----------
+    def play(self):
+        """저장된 퀴즈를 차례로 출제하고 결과를 보여준다."""
+        if not self.quizzes:                       # 빈 리스트는 False로 취급
+            print("📭 등록된 퀴즈가 없습니다. 먼저 퀴즈를 추가하세요.")
+            return
+        total = len(self.quizzes)
+        correct = 0
+        print(f"\n📝 퀴즈를 시작합니다! (총 {total}문제)\n")
+        for number, quiz in enumerate(self.quizzes, start=1):
+            quiz.display(number)
+            user_answer = self.get_number("정답 입력: ", 1, 4)
+            if quiz.is_correct(user_answer):
+                print("✅ 정답입니다!\n")
+                correct += 1
+            else:
+                print(f"❌ 오답입니다. 정답은 {quiz.answer}번입니다.\n")
+        score = int(correct / total * 100)
+        print("=" * 40)
+        print(f"🏆 결과: {total}문제 중 {correct}문제 정답! ({score}점)")
+        print("=" * 40)
