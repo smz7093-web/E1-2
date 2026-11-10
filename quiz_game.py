@@ -1,12 +1,63 @@
+import json
+from pathlib import Path
+
+from quiz import Quiz
 from default_quizzes import get_default_quizzes
+
+# 프로젝트 루트(이 파일이 있는 폴더)의 state.json
+# → 어느 폴더에서 실행하든 같은 위치를 사용하게 됨
+STATE_FILE = Path(__file__).parent / "state.json"
 
 
 class QuizGame:
     """게임 전체(메뉴, 진행, 저장)를 관리하는 클래스"""
 
     def __init__(self):
-        self.quizzes = get_default_quizzes()   # 퀴즈 목록 (list of Quiz)
+        self.quizzes = []          # 퀴즈 목록 (list of Quiz)
         self.best_score = None     # 최고 점수 (아직 없으면 None)
+        self.best_correct = 0
+        self.best_total = 0
+        self.load()                # 시작할 때 불러오기
+
+    # ---------- 파일 저장/불러오기 ----------
+    def load(self):
+        if not STATE_FILE.exists():      # 첫 실행
+            print("📂 저장된 데이터가 없어 기본 퀴즈로 시작합니다.")
+            self.quizzes = get_default_quizzes()
+            return
+        try:
+            with open(STATE_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)                      # JSON 텍스트 → dict
+            self.quizzes = [Quiz.from_dict(q) for q in data["quizzes"]]
+            self.best_score = data.get("best_score")
+            self.best_correct = data.get("best_correct", 0)
+            self.best_total = data.get("best_total", 0)
+            score_text = "없음" if self.best_score is None else f"{self.best_score}점"
+            print(f"📂 저장된 데이터를 불러왔습니다. (퀴즈 {len(self.quizzes)}개, 최고점수 {score_text})")
+        except (json.JSONDecodeError, KeyError, TypeError, ValueError):
+            # JSON 문법이 깨짐 / 키가 없음 / 타입이 이상함 / 값이 범위 밖
+            print("⚠️ 데이터 파일이 손상되어 기본 퀴즈로 복구합니다.")
+            self.quizzes = get_default_quizzes()
+            self.best_score = None
+            self.best_correct = 0
+            self.best_total = 0
+            self.save()                                  # 정상 파일로 덮어쓰기
+        except OSError as e:                             # 권한 문제 등 읽기 오류
+            print(f"⚠️ 파일을 읽을 수 없습니다: {e}. 기본 퀴즈로 시작합니다.")
+            self.quizzes = get_default_quizzes()
+
+    def save(self):
+        data = {
+            "quizzes": [q.to_dict() for q in self.quizzes],   # Quiz 객체 → dict
+            "best_score": self.best_score,
+            "best_correct": self.best_correct,
+            "best_total": self.best_total,
+        }
+        try:
+            with open(STATE_FILE, "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=4)   # 한글 그대로, 보기 좋게
+        except OSError as e:
+            print(f"⚠️ 저장에 실패했습니다: {e}")
 
     # ---------- 입력 처리 ----------
     def get_number(self, prompt, min_value, max_value):
@@ -51,6 +102,7 @@ class QuizGame:
             elif choice == 4:
                 print("(준비 중) 점수 확인")
             else:
+                self.save()
                 print("👋 게임을 종료합니다. 안녕히 가세요!")
                 break
 
