@@ -106,7 +106,7 @@ class QuizGame:
             elif choice == 2:
                 self.add_quiz()
             elif choice == 3:
-                print("(준비 중) 퀴즈 목록")
+                self.list_quizzes()
             elif choice == 4:
                 print("(준비 중) 점수 확인")
             else:
@@ -144,3 +144,13 @@ class QuizGame:
         self.quizzes.append(Quiz(question, choices, answer))
         self.save()                                                       # 바로 파일에 저장
         print("\n✅ 퀴즈가 추가되었습니다!\n")
+
+    def list_quizzes(self):
+        if not self.quizzes:
+            print("📭 등록된 퀴즈가 없습니다.")
+            return
+        print(f"\n📋 등록된 퀴즈 목록 (총 {len(self.quizzes)}개)\n")
+        print("-" * 40)
+        for i, quiz in enumerate(self.quizzes, start=1):
+            print(f"[{i}] {quiz.question}")
+        print("-" * 40)
