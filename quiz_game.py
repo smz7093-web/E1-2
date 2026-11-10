@@ -77,6 +77,14 @@ class QuizGame:
                 continue
             return number
 
+    def get_text(self, prompt):
+        """빈 문자열이 아닌 텍스트를 받을 때까지 반복"""
+        while True:
+            text = input(prompt).strip()
+            if text:
+                return text
+            print("⚠️ 빈 값은 입력할 수 없습니다.")
+
     # ---------- 메뉴 ----------
     def show_menu(self):
         print("=" * 40)
@@ -96,7 +104,7 @@ class QuizGame:
             if choice == 1:
                 self.play()
             elif choice == 2:
-                print("(준비 중) 퀴즈 추가")
+                self.add_quiz()
             elif choice == 3:
                 print("(준비 중) 퀴즈 목록")
             elif choice == 4:
@@ -127,3 +135,12 @@ class QuizGame:
         print("=" * 40)
         print(f"🏆 결과: {total}문제 중 {correct}문제 정답! ({score}점)")
         print("=" * 40)
+
+    def add_quiz(self):
+        print("\n📌 새로운 퀴즈를 추가합니다.\n")
+        question = self.get_text("문제를 입력하세요: ")
+        choices = [self.get_text(f"선택지 {i}: ") for i in range(1, 5)]   # 4개 입력
+        answer = self.get_number("정답 번호 (1-4): ", 1, 4)
+        self.quizzes.append(Quiz(question, choices, answer))
+        self.save()                                                       # 바로 파일에 저장
+        print("\n✅ 퀴즈가 추가되었습니다!\n")
