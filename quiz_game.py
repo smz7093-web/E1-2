@@ -108,7 +108,7 @@ class QuizGame:
             elif choice == 3:
                 self.list_quizzes()
             elif choice == 4:
-                print("(준비 중) 점수 확인")
+                self.show_score()
             else:
                 self.save()
                 print("👋 게임을 종료합니다. 안녕히 가세요!")
@@ -135,6 +135,7 @@ class QuizGame:
         print("=" * 40)
         print(f"🏆 결과: {total}문제 중 {correct}문제 정답! ({score}점)")
         print("=" * 40)
+        self.update_best_score(score, correct, total)
 
     def add_quiz(self):
         print("\n📌 새로운 퀴즈를 추가합니다.\n")
@@ -154,3 +155,18 @@ class QuizGame:
         for i, quiz in enumerate(self.quizzes, start=1):
             print(f"[{i}] {quiz.question}")
         print("-" * 40)
+
+    def update_best_score(self, score, correct, total):
+        """이번 점수가 최고 점수보다 높으면 갱신하고 저장"""
+        if self.best_score is None or score > self.best_score:
+            self.best_score = score
+            self.best_correct = correct
+            self.best_total = total
+            print("🎉 새로운 최고 점수입니다!")
+            self.save()
+
+    def show_score(self):
+        if self.best_score is None:
+            print("📭 아직 퀴즈를 풀지 않았습니다. 먼저 퀴즈를 풀어보세요!")
+            return
+        print(f"\n🏆 최고 점수: {self.best_score}점 ({self.best_total}문제 중 {self.best_correct}문제 정답)\n")
