@@ -98,21 +98,26 @@ class QuizGame:
         print("=" * 40)
 
     def run(self):
-        while True:
-            self.show_menu()
-            choice = self.get_number("선택: ", 1, 5)
-            if choice == 1:
-                self.play()
-            elif choice == 2:
-                self.add_quiz()
-            elif choice == 3:
-                self.list_quizzes()
-            elif choice == 4:
-                self.show_score()
-            else:
-                self.save()
-                print("👋 게임을 종료합니다. 안녕히 가세요!")
-                break
+        try:
+            while True:
+                self.show_menu()
+                choice = self.get_number("선택: ", 1, 5)
+                if choice == 1:
+                    self.play()
+                elif choice == 2:
+                    self.add_quiz()
+                elif choice == 3:
+                    self.list_quizzes()
+                elif choice == 4:
+                    self.show_score()
+                else:
+                    self.save()
+                    print("👋 게임을 종료합니다. 안녕히 가세요!")
+                    break
+        except (KeyboardInterrupt, EOFError):
+            # Ctrl+C → KeyboardInterrupt / 입력 스트림 종료(Ctrl+Z, Ctrl+D 등) → EOFError
+            print("\n\n⚠️ 입력이 중단되었습니다. 데이터를 저장하고 종료합니다.")
+            self.save()
 
     # ---------- 기능 ----------
     def play(self):
