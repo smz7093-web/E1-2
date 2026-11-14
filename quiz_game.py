@@ -100,7 +100,8 @@ class QuizGame:
         print("2. 퀴즈 추가")
         print("3. 퀴즈 목록")
         print("4. 점수 확인")
-        print("5. 종료")
+        print("5. 퀴즈 삭제")
+        print("6. 종료")
         print("=" * 40)
 
     def run(self):
@@ -108,7 +109,7 @@ class QuizGame:
         try:
             while True:
                 self.show_menu()
-                choice = self.get_number("선택: ", 1, 5)
+                choice = self.get_number("선택: ", 1, 6)
                 if choice == 1:
                     self.play()
                 elif choice == 2:
@@ -117,6 +118,8 @@ class QuizGame:
                     self.list_quizzes()
                 elif choice == 4:
                     self.show_score()
+                elif choice == 5:
+                    self.delete_quiz()
                 else:
                     self.save()
                     print("👋 게임을 종료합니다. 안녕히 가세요!")
@@ -173,6 +176,25 @@ class QuizGame:
         for i, quiz in enumerate(self.quizzes, start=1):
             print(f"[{i}] {quiz.question}")
         print("-" * 40)
+
+    def delete_quiz(self):
+        """목록을 보여주고 번호를 입력받아 퀴즈를 삭제한 뒤 저장한다. (0 입력 시 취소)"""
+        if not self.quizzes:
+            print("📭 삭제할 퀴즈가 없습니다.")
+            return
+        self.list_quizzes()
+        number = self.get_number(f"삭제할 퀴즈 번호 (1-{len(self.quizzes)}, 0=취소): ", 0, len(self.quizzes))
+        if number == 0:
+            print("↩️ 삭제를 취소했습니다.\n")
+            return
+        target = self.quizzes[number - 1]          # 화면 번호는 1부터, 리스트 인덱스는 0부터
+        confirm = self.get_number(f"'{target.question}'\n정말 삭제할까요? (1=예, 2=아니오): ", 1, 2)
+        if confirm == 2:
+            print("↩️ 삭제를 취소했습니다.\n")
+            return
+        self.quizzes.pop(number - 1)
+        self.save()
+        print(f"🗑️ 퀴즈가 삭제되었습니다. (남은 퀴즈 {len(self.quizzes)}개)\n")
 
     def update_best_score(self, score, correct, total):
         """이번 점수가 최고 점수보다 높으면 갱신하고 저장한다."""
