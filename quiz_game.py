@@ -15,15 +15,23 @@ class QuizGame:
     def __init__(self):
         self.quizzes = []          # 퀴즈 목록 (list of Quiz)
         self.best_score = None     # 최고 점수 (아직 없으면 None)
-        self.best_correct = 0
-        self.best_total = 0
+        self.best_correct = 0      # 최고 점수 기록 당시 맞힌 문제 수
+        self.best_total = 0        # 최고 점수 기록 당시 전체 문제 수
         self.load()                # 시작할 때 불러오기
 
     # ---------- 파일 저장/불러오기 ----------
+    def reset_to_default(self):
+        """퀴즈를 기본 퀴즈로, 최고 점수 기록을 초기 상태로 되돌린다."""
+        self.quizzes = get_default_quizzes()
+        self.best_score = None
+        self.best_correct = 0
+        self.best_total = 0
+
     def load(self):
+        """state.json을 읽어 퀴즈와 최고 점수를 복원한다. (없거나 손상되면 기본값)"""
         if not STATE_FILE.exists():      # 첫 실행
             print("📂 저장된 데이터가 없어 기본 퀴즈로 시작합니다.")
-            self.quizzes = get_default_quizzes()
+            self.reset_to_default()
             return
         try:
             with open(STATE_FILE, "r", encoding="utf-8") as f:
@@ -37,16 +45,14 @@ class QuizGame:
         except (json.JSONDecodeError, KeyError, TypeError, ValueError):
             # JSON 문법이 깨짐 / 키가 없음 / 타입이 이상함 / 값이 범위 밖
             print("⚠️ 데이터 파일이 손상되어 기본 퀴즈로 복구합니다.")
-            self.quizzes = get_default_quizzes()
-            self.best_score = None
-            self.best_correct = 0
-            self.best_total = 0
+            self.reset_to_default()
             self.save()                                  # 정상 파일로 덮어쓰기
         except OSError as e:                             # 권한 문제 등 읽기 오류
             print(f"⚠️ 파일을 읽을 수 없습니다: {e}. 기본 퀴즈로 시작합니다.")
-            self.quizzes = get_default_quizzes()
+            self.reset_to_default()
 
     def save(self):
+        """현재 퀴즈 목록과 최고 점수를 state.json에 저장한다."""
         data = {
             "quizzes": [q.to_dict() for q in self.quizzes],   # Quiz 객체 → dict
             "best_score": self.best_score,
@@ -70,15 +76,13 @@ class QuizGame:
             try:
                 number = int(raw)                     # "abc"면 ValueError 발생
             except ValueError:
-                print(f"⚠️ 잘못된 입력입니다. {min_value}-{max_value} 사이의 숫자를 입력하세요.")
-                continue
-            if not min_value <= number <= max_value:
-                print(f"⚠️ 잘못된 입력입니다. {min_value}-{max_value} 사이의 숫자를 입력하세요.")
-                continue
-            return number
+                number = None                         # 숫자가 아님 → 아래에서 오류 처리
+            if number is not None and min_value <= number <= max_value:
+                return number
+            print(f"⚠️ 잘못된 입력입니다. {min_value}-{max_value} 사이의 숫자를 입력하세요.")
 
     def get_text(self, prompt):
-        """빈 문자열이 아닌 텍스트를 받을 때까지 반복"""
+        """빈 문자열이 아닌 텍스트를 받을 때까지 반복해서 묻는다."""
         while True:
             text = input(prompt).strip()
             if text:
@@ -87,6 +91,7 @@ class QuizGame:
 
     # ---------- 메뉴 ----------
     def show_menu(self):
+        """메인 메뉴를 출력한다."""
         print("=" * 40)
         print("        🎯 나만의 퀴즈 게임 🎯")
         print("=" * 40)
@@ -98,6 +103,7 @@ class QuizGame:
         print("=" * 40)
 
     def run(self):
+        """메뉴를 반복해서 보여주고 선택한 기능을 실행한다. (종료 / Ctrl+C / EOF 시 저장 후 종료)"""
         try:
             while True:
                 self.show_menu()
@@ -143,6 +149,7 @@ class QuizGame:
         self.update_best_score(score, correct, total)
 
     def add_quiz(self):
+        """사용자에게 문제·선택지·정답을 입력받아 새 퀴즈를 추가하고 저장한다."""
         print("\n📌 새로운 퀴즈를 추가합니다.\n")
         question = self.get_text("문제를 입력하세요: ")
         choices = [self.get_text(f"선택지 {i}: ") for i in range(1, 5)]   # 4개 입력
@@ -152,6 +159,7 @@ class QuizGame:
         print("\n✅ 퀴즈가 추가되었습니다!\n")
 
     def list_quizzes(self):
+        """등록된 퀴즈의 문제 목록을 번호와 함께 출력한다."""
         if not self.quizzes:
             print("📭 등록된 퀴즈가 없습니다.")
             return
@@ -162,7 +170,7 @@ class QuizGame:
         print("-" * 40)
 
     def update_best_score(self, score, correct, total):
-        """이번 점수가 최고 점수보다 높으면 갱신하고 저장"""
+        """이번 점수가 최고 점수보다 높으면 갱신하고 저장한다."""
         if self.best_score is None or score > self.best_score:
             self.best_score = score
             self.best_correct = correct
@@ -171,6 +179,7 @@ class QuizGame:
             self.save()
 
     def show_score(self):
+        """최고 점수 기록을 출력한다."""
         if self.best_score is None:
             print("📭 아직 퀴즈를 풀지 않았습니다. 먼저 퀴즈를 풀어보세요!")
             return
