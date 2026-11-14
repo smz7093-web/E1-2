@@ -7,7 +7,7 @@
 - **Part A. 제출용 README 항목**: 과제에서 꼭 넣으라고 한 항목(개요, 주제 선정 이유, 실행 방법, 기능 목록, 파일 구조, 데이터 파일 설명)
 - **Part B. 미션 수행 가이드**: 0단계부터 13단계까지 순서대로 따라 하면 미션을 마칠 수 있게 정리한 과정 (코드 + Git 명령어 + 개념 설명)
 
-> 💡 제출할 때는 Part A를 **내 주제에 맞게 고쳐 쓰고**, Part B는 "수행 과정 기록"으로 남겨 두거나 따로 `docs/GUIDE.md`로 옮겨도 됩니다.
+> 💡 Part A는 이 프로젝트의 최종 설명이고, Part B는 단계별로 실제 수행한 과정을 기록한 것입니다.
 
 ---
 
@@ -24,17 +24,26 @@
 
 ## 2. 퀴즈 주제와 선정 이유
 
-**주제: Python & Git 기초** *(예시입니다. 내 주제로 바꿔 쓰세요. 영화, 역사, 게임, 음식 등 뭐든 괜찮습니다.)*
+**주제: Python & Git 기초**
 
-- 이 미션에서 배우는 내용을 문제로 만들면 만드는 동안 자연스럽게 복습이 됩니다.
+- 이 미션에서 배우는 내용(Python 문법, 자료형, Git 명령어)을 문제로 만들면 만드는 동안 자연스럽게 복습이 됩니다.
 - 정답이 분명한 개념형 문제라서 객관식 4지선다로 만들기 좋습니다.
+- 퀴즈 추가 기능으로 공부하면서 새로 알게 된 내용을 계속 문제로 쌓아 갈 수 있습니다. (예: 직접 추가한 `.gitignore` 문제)
+
+| 번호 | 기본 퀴즈 | 분류 |
+|---|---|---|
+| 1 | Python의 창시자는? | Python |
+| 2 | Python에서 리스트의 길이를 구하는 함수는? | Python |
+| 3 | 다음 중 변경할 수 없는(immutable) 자료형은? | Python |
+| 4 | Git에서 변경 사항을 스테이징 영역에 올리는 명령어는? | Git |
+| 5 | 원격 저장소의 새 커밋을 가져와 현재 브랜치에 합치는 Git 명령어는? | Git |
 
 ## 3. 실행 방법
 
 ```bash
 # 1) 저장소 복제
-git clone https://github.com/<내-아이디>/quiz-game.git
-cd quiz-game
+git clone https://github.com/smz7093-web/E1-2.git
+cd E1-2
 
 # 2) 파이썬 버전 확인 (3.10 이상)
 python --version
@@ -64,21 +73,33 @@ python main.py
 ## 5. 파일 구조
 
 ```
-quiz-game/
+E1-2/
 ├── main.py              # 프로그램 시작점 (QuizGame 생성 후 run 호출)
 ├── quiz.py              # Quiz 클래스: 문제 1개 (출력, 정답 확인, dict 변환)
 ├── quiz_game.py         # QuizGame 클래스: 메뉴, 게임 진행, 입력 처리, 저장/불러오기
-├── default_quizzes.py   # 기본 퀴즈 5개 이상 (Quiz 인스턴스로 생성)
+├── default_quizzes.py   # 기본 퀴즈 5개 (Quiz 인스턴스로 생성)
 ├── state.json           # 실행 중에 자동 생성되는 데이터 파일 (Git에는 올리지 않음)
 ├── .gitignore
 ├── README.md
 └── docs/
     └── screenshots/     # 제출용 실행 화면 캡처
-        ├── menu.png
-        ├── play.png
-        ├── add_quiz.png
-        └── score.png
+        ├── dev_env.png      # 개발 환경 (Python 버전, Git 설정)
+        ├── menu.png         # 메인 메뉴
+        ├── play.png         # 퀴즈 풀기
+        ├── add_quiz.png     # 퀴즈 추가
+        ├── list.png         # 퀴즈 목록
+        ├── score.png        # 점수 확인
+        └── git_graph.png    # git log --graph 결과
 ```
+
+**클래스/파일별 책임**
+
+| 클래스/파일 | 책임 |
+|---|---|
+| `Quiz` (`quiz.py`) | 문제 1개의 데이터 + 출력 + 정답 확인 + dict 변환 |
+| `QuizGame` (`quiz_game.py`) | 메뉴, 입력 검증, 게임 진행, 점수 관리, 파일 저장/불러오기 |
+| `default_quizzes.py` | 기본 퀴즈 데이터 |
+| `main.py` | 프로그램 시작점 |
 
 ## 6. 데이터 파일 설명 (`state.json`)
 
@@ -117,8 +138,14 @@ quiz-game/
 | 메뉴 | 퀴즈 풀기 |
 |---|---|
 | ![menu](docs/screenshots/menu.png) | ![play](docs/screenshots/play.png) |
-| **퀴즈 추가** | **점수 확인** |
-| ![add](docs/screenshots/add_quiz.png) | ![score](docs/screenshots/score.png) |
+| **퀴즈 추가** | **퀴즈 목록** |
+| ![add](docs/screenshots/add_quiz.png) | ![list](docs/screenshots/list.png) |
+| **점수 확인** | **개발 환경** |
+| ![score](docs/screenshots/score.png) | ![dev_env](docs/screenshots/dev_env.png) |
+
+**Git 커밋 그래프** (`git log --oneline --graph --all`)
+
+![git graph](docs/screenshots/git_graph.png)
 
 ---
 
@@ -173,14 +200,14 @@ VSCode 화면 + `python --version` + `git config --list` 결과가 함께 보이
 ## 1단계. Git 저장소 설정 → 첫 커밋 & push
 
 ### 1-1. GitHub에서 새 저장소 만들기
-- GitHub → **New repository** → 이름: `quiz-game` → **Public**
+- GitHub → **New repository** → 이름: `E1-2` → **Public**
 - ⚠️ "Add a README file"은 **체크하지 마세요** (로컬에서 만들 거라 충돌이 납니다)
 
 ### 1-2. 로컬 폴더 만들고 `git init`
 
 ```bash
-mkdir quiz-game
-cd quiz-game
+mkdir E1-2
+cd E1-2
 git init                 # ✅ init: 이 폴더를 Git 저장소로 만든다 (.git 폴더 생성)
 ```
 
@@ -215,7 +242,7 @@ git status                                   # 어떤 파일이 바뀌었는지 
 git add .gitignore README.md                 # ✅ add: 커밋할 파일을 스테이징 영역에 올림
 git commit -m "Chore: 프로젝트 초기 설정 (.gitignore, README)"   # ✅ commit: 스냅샷 저장
 git branch -M main                           # 브랜치 이름을 main으로 확정
-git remote add origin https://github.com/<내-아이디>/quiz-game.git
+git remote add origin https://github.com/smz7093-web/E1-2.git
 git push -u origin main                      # ✅ push: 원격 저장소(GitHub)로 업로드
 ```
 
@@ -735,8 +762,57 @@ git commit -m "Fix: Ctrl+C, EOF 입력 시 저장 후 안전 종료"
 | `default_quizzes.py` | 기본 퀴즈 데이터 |
 | `main.py` | 프로그램 시작점 |
 
+### 실제로 정리한 내용
+
+**① 기본값 복구 코드 중복 제거 → `reset_to_default()`로 분리**
+
+`load()`의 첫 실행 / 손상 파일 / 읽기 오류 세 곳에서 같은 초기화 코드를 반복하던 것을 메서드 하나로 묶었습니다.
+
+```python
+    def reset_to_default(self):
+        """퀴즈를 기본 퀴즈로, 최고 점수 기록을 초기 상태로 되돌린다."""
+        self.quizzes = get_default_quizzes()
+        self.best_score = None
+        self.best_correct = 0
+        self.best_total = 0
+
+    def load(self):
+        """state.json을 읽어 퀴즈와 최고 점수를 복원한다. (없거나 손상되면 기본값)"""
+        if not STATE_FILE.exists():      # 첫 실행
+            print("📂 저장된 데이터가 없어 기본 퀴즈로 시작합니다.")
+            self.reset_to_default()
+            return
+        try:
+            ...                                          # (불러오기 부분은 6단계와 같음)
+        except (json.JSONDecodeError, KeyError, TypeError, ValueError):
+            print("⚠️ 데이터 파일이 손상되어 기본 퀴즈로 복구합니다.")
+            self.reset_to_default()
+            self.save()                                  # 정상 파일로 덮어쓰기
+        except OSError as e:
+            print(f"⚠️ 파일을 읽을 수 없습니다: {e}. 기본 퀴즈로 시작합니다.")
+            self.reset_to_default()
+```
+
+**② `get_number()`의 중복 오류 메시지 통합**
+
+숫자가 아닐 때와 범위 밖일 때 똑같은 메시지를 두 번 쓰던 것을 한 곳에서 출력하도록 바꿨습니다.
+
+```python
+            try:
+                number = int(raw)                     # "abc"면 ValueError 발생
+            except ValueError:
+                number = None                         # 숫자가 아님 → 아래에서 오류 처리
+            if number is not None and min_value <= number <= max_value:
+                return number
+            print(f"⚠️ 잘못된 입력입니다. {min_value}-{max_value} 사이의 숫자를 입력하세요.")
+```
+
+**③ 모든 메서드에 docstring 추가** (`load`, `save`, `show_menu`, `run`, `add_quiz`, `list_quizzes`, `show_score`)
+
+> 리팩터링은 **동작을 바꾸지 않고** 구조만 정리하는 것입니다. 정리한 뒤 모든 메뉴, 잘못된 입력, 손상 파일 복구를 다시 테스트해서 결과가 같은지 확인했습니다.
+
 ```bash
-git add .
+git add quiz_game.py      # 아직 커밋하지 않을 파일(캡처 등)이 섞이지 않게 파일을 지정
 git commit -m "Refactor: QuizGame 메서드 책임 분리 및 구조 정리"
 ```
 
@@ -745,7 +821,7 @@ git commit -m "Refactor: QuizGame 메서드 책임 분리 및 구조 정리"
 ## 12단계. README 작성 → 최종 push
 
 1. 이 문서의 **Part A** 항목을 내 주제에 맞게 고쳐 씁니다.
-2. 실행 화면을 캡처해서 `docs/screenshots/`에 저장합니다. (`menu.png`, `play.png`, `add_quiz.png`, `score.png`)
+2. 실행 화면을 캡처해서 `docs/screenshots/`에 저장합니다. (`dev_env.png`, `menu.png`, `play.png`, `add_quiz.png`, `list.png`, `score.png`, `git_graph.png`)
    - Windows 캡처 단축키: `Win + Shift + S`
 
 ```bash
@@ -765,8 +841,8 @@ GitHub 저장소 페이지에서 README와 사진이 잘 보이는지 확인하�
 ```bash
 # ① 원래 작업 폴더 밖으로 나가서 다른 폴더에 복제
 cd ..
-git clone https://github.com/<내-아이디>/quiz-game.git quiz-game-clone   # ✅ clone
-cd quiz-game-clone
+git clone https://github.com/smz7093-web/E1-2.git E1-2-clone   # ✅ clone
+cd E1-2-clone
 
 # ② 복제본에서 README에 한 줄 추가 (VSCode로 편집해도 됨)
 echo "" >> README.md
@@ -777,7 +853,7 @@ git commit -m "Docs: README에 clone 실습 내용 추가"
 git push origin main
 
 # ③ 원래 작업 폴더로 돌아가서 변경 사항 받아오기
-cd ../quiz-game
+cd ../E1-2
 git pull origin main                                                       # ✅ pull
 
 # ④ 반영 확인
