@@ -1,4 +1,5 @@
 import json
+import random
 from pathlib import Path
 
 from quiz import Quiz
@@ -127,14 +128,18 @@ class QuizGame:
 
     # ---------- 기능 ----------
     def play(self):
-        """저장된 퀴즈를 차례로 출제하고 결과를 보여준다."""
+        """풀 문제 수를 입력받아 무작위로 골라 출제하고 결과를 보여준다."""
         if not self.quizzes:                       # 빈 리스트는 False로 취급
             print("📭 등록된 퀴즈가 없습니다. 먼저 퀴즈를 추가하세요.")
             return
-        total = len(self.quizzes)
+        max_count = len(self.quizzes)
+        count = self.get_number(f"\n몇 문제를 풀까요? (1-{max_count}): ", 1, max_count)
+        # random.sample: 원본 리스트는 그대로 두고, count개를 겹치지 않게 무작위로 뽑아 새 리스트로 반환
+        selected = random.sample(self.quizzes, count)
+        total = len(selected)
         correct = 0
-        print(f"\n📝 퀴즈를 시작합니다! (총 {total}문제)\n")
-        for number, quiz in enumerate(self.quizzes, start=1):
+        print(f"\n📝 퀴즈를 시작합니다! (총 {total}문제, 무작위 순서)\n")
+        for number, quiz in enumerate(selected, start=1):
             quiz.display(number)
             user_answer = self.get_number("정답 입력: ", 1, 4)
             if quiz.is_correct(user_answer):
