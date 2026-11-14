@@ -1,5 +1,6 @@
 import json
 import random
+from datetime import datetime
 from pathlib import Path
 
 from quiz import Quiz
@@ -18,6 +19,7 @@ class QuizGame:
         self.best_score = None     # 최고 점수 (아직 없으면 None)
         self.best_correct = 0      # 최고 점수 기록 당시 맞힌 문제 수
         self.best_total = 0        # 최고 점수 기록 당시 전체 문제 수
+        self.history = []          # 플레이 기록 (list of dict: date, total, correct, score)
         self.load()                # 시작할 때 불러오기
 
     # ---------- 파일 저장/불러오기 ----------
@@ -27,6 +29,7 @@ class QuizGame:
         self.best_score = None
         self.best_correct = 0
         self.best_total = 0
+        self.history = []
 
     def load(self):
         """state.json을 읽어 퀴즈와 최고 점수를 복원한다. (없거나 손상되면 기본값)"""
@@ -41,6 +44,12 @@ class QuizGame:
             self.best_score = data.get("best_score")
             self.best_correct = data.get("best_correct", 0)
             self.best_total = data.get("best_total", 0)
+            self.history = data.get("history", [])       # 히스토리 기능 이전 파일에는 없음 → 빈 리스트
+            keys = {"date", "total", "correct", "score"}
+            if not isinstance(self.history, list) or not all(
+                isinstance(r, dict) and keys <= r.keys() for r in self.history
+            ):
+                raise ValueError("history 형식이 올바르지 않습니다.")
             score_text = "없음" if self.best_score is None else f"{self.best_score}점"
             print(f"📂 저장된 데이터를 불러왔습니다. (퀴즈 {len(self.quizzes)}개, 최고점수 {score_text})")
         except (json.JSONDecodeError, KeyError, TypeError, ValueError):
@@ -59,6 +68,7 @@ class QuizGame:
             "best_score": self.best_score,
             "best_correct": self.best_correct,
             "best_total": self.best_total,
+            "history": self.history,
         }
         try:
             with open(STATE_FILE, "w", encoding="utf-8") as f:
@@ -171,7 +181,9 @@ class QuizGame:
         if hints_used:
             print(f"💡 힌트 사용: {hints_used}회")
         print("=" * 40)
+        self.add_history(score, correct, total)
         self.update_best_score(score, correct, total)
+        self.save()                                # 히스토리는 매번 저장 (최고 점수가 아니어도)
 
     def add_quiz(self):
         """사용자에게 문제·선택지·정답·힌트(선택)를 입력받아 새 퀴즈를 추가하고 저장한다."""
@@ -215,17 +227,32 @@ class QuizGame:
         print(f"🗑️ 퀴즈가 삭제되었습니다. (남은 퀴즈 {len(self.quizzes)}개)\n")
 
     def update_best_score(self, score, correct, total):
-        """이번 점수가 최고 점수보다 높으면 갱신하고 저장한다."""
+        """이번 점수가 최고 점수보다 높으면 갱신한다. (저장은 play()에서 한 번에)"""
         if self.best_score is None or score > self.best_score:
             self.best_score = score
             self.best_correct = correct
             self.best_total = total
             print("🎉 새로운 최고 점수입니다!")
-            self.save()
 
-    def show_score(self):
-        """최고 점수 기록을 출력한다."""
+    def add_history(self, score, correct, total):
+        """이번 플레이 결과를 날짜와 함께 히스토리에 추가한다."""
+        self.history.append({
+            "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
+            "total": total,
+            "correct": correct,
+            "score": score,
+        })
+
+    def show_score(self, recent=5):
+        """최고 점수와 최근 플레이 기록(최대 recent개)을 출력한다."""
         if self.best_score is None:
             print("📭 아직 퀴즈를 풀지 않았습니다. 먼저 퀴즈를 풀어보세요!")
             return
         print(f"\n🏆 최고 점수: {self.best_score}점 ({self.best_total}문제 중 {self.best_correct}문제 정답)\n")
+        if not self.history:
+            return
+        print(f"📜 최근 기록 (최근 {min(recent, len(self.history))}개 / 전체 {len(self.history)}회)")
+        print("-" * 40)
+        for record in reversed(self.history[-recent:]):          # 최신 기록이 위로
+            print(f"{record['date']}  {record['total']}문제 중 {record['correct']}문제 정답  {record['score']}점")
+        print("-" * 40 + "\n")
