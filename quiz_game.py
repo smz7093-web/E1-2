@@ -82,6 +82,16 @@ class QuizGame:
                 return number
             print(f"⚠️ 잘못된 입력입니다. {min_value}-{max_value} 사이의 숫자를 입력하세요.")
 
+    def ask_answer(self, quiz):
+        """정답 번호를 입력받는다. 힌트가 있으면 0으로 힌트를 볼 수 있다. → (답, 힌트 사용 여부)"""
+        if not quiz.hint:
+            return self.get_number("정답 입력: ", 1, 4), False
+        answer = self.get_number("정답 입력 (0=힌트 보기): ", 0, 4)
+        if answer != 0:
+            return answer, False
+        print(f"💡 힌트: {quiz.hint}  (힌트를 보면 맞혀도 절반 점수)")
+        return self.get_number("정답 입력: ", 1, 4), True
+
     def get_text(self, prompt):
         """빈 문자열이 아닌 텍스트를 받을 때까지 반복해서 묻는다."""
         while True:
@@ -141,28 +151,36 @@ class QuizGame:
         selected = random.sample(self.quizzes, count)
         total = len(selected)
         correct = 0
+        points = 0          # 맞히면 1점, 힌트를 보고 맞히면 0.5점
+        hints_used = 0
         print(f"\n📝 퀴즈를 시작합니다! (총 {total}문제, 무작위 순서)\n")
         for number, quiz in enumerate(selected, start=1):
             quiz.display(number)
-            user_answer = self.get_number("정답 입력: ", 1, 4)
+            user_answer, used_hint = self.ask_answer(quiz)
+            if used_hint:
+                hints_used += 1
             if quiz.is_correct(user_answer):
-                print("✅ 정답입니다!\n")
+                print("✅ 정답입니다!" + (" (힌트 사용: 절반 점수)" if used_hint else "") + "\n")
                 correct += 1
+                points += 0.5 if used_hint else 1
             else:
                 print(f"❌ 오답입니다. 정답은 {quiz.answer}번입니다.\n")
-        score = int(correct / total * 100)
+        score = int(points / total * 100)
         print("=" * 40)
         print(f"🏆 결과: {total}문제 중 {correct}문제 정답! ({score}점)")
+        if hints_used:
+            print(f"💡 힌트 사용: {hints_used}회")
         print("=" * 40)
         self.update_best_score(score, correct, total)
 
     def add_quiz(self):
-        """사용자에게 문제·선택지·정답을 입력받아 새 퀴즈를 추가하고 저장한다."""
+        """사용자에게 문제·선택지·정답·힌트(선택)를 입력받아 새 퀴즈를 추가하고 저장한다."""
         print("\n📌 새로운 퀴즈를 추가합니다.\n")
         question = self.get_text("문제를 입력하세요: ")
         choices = [self.get_text(f"선택지 {i}: ") for i in range(1, 5)]   # 4개 입력
         answer = self.get_number("정답 번호 (1-4): ", 1, 4)
-        self.quizzes.append(Quiz(question, choices, answer))
+        hint = input("힌트 (없으면 Enter): ").strip()                     # 힌트는 선택 사항
+        self.quizzes.append(Quiz(question, choices, answer, hint))
         self.save()                                                       # 바로 파일에 저장
         print("\n✅ 퀴즈가 추가되었습니다!\n")
 
