@@ -949,3 +949,5 @@ git log --oneline --graph --all
 | `fatal: remote origin already exists` | `git remote set-url origin <URL>`로 주소만 바꾸기 |
 | merge할 때 충돌(conflict) | 파일에서 `<<<<<<<`, `=======`, `>>>>>>>` 부분을 직접 고친 뒤 `git add` → `git commit` |
 | state.json이 엉뚱한 폴더에 생김 | `Path(__file__).parent / "state.json"`처럼 코드 파일 기준 경로를 쓰고 있는지 확인 |
+
+> clone 실습: 복제한 저장소(E1-2-clone)에서 추가한 줄입니다.
