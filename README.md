@@ -90,7 +90,9 @@ E1-2/
         ├── play.png         # 퀴즈 풀기
         ├── add_quiz.png     # 퀴즈 추가
         ├── list.png         # 퀴즈 목록
-        ├── score.png        # 점수 확인
+        ├── score.png        # 점수 확인 (최근 기록)
+        ├── hint.png         # 힌트 보기
+        ├── delete.png       # 퀴즈 삭제
         └── git_graph.png    # git log --graph 결과
 ```
 
@@ -151,8 +153,10 @@ E1-2/
 | ![menu](docs/screenshots/menu.png) | ![play](docs/screenshots/play.png) |
 | **퀴즈 추가** | **퀴즈 목록** |
 | ![add](docs/screenshots/add_quiz.png) | ![list](docs/screenshots/list.png) |
-| **점수 확인** | **개발 환경** |
-| ![score](docs/screenshots/score.png) | ![dev_env](docs/screenshots/dev_env.png) |
+| **점수 확인 (최근 기록)** | **힌트 보기** |
+| ![score](docs/screenshots/score.png) | ![hint](docs/screenshots/hint.png) |
+| **퀴즈 삭제** | **개발 환경** |
+| ![delete](docs/screenshots/delete.png) | ![dev_env](docs/screenshots/dev_env.png) |
 
 **Git 커밋 그래프** (`git log --oneline --graph --all`)
 
@@ -832,7 +836,7 @@ git commit -m "Refactor: QuizGame 메서드 책임 분리 및 구조 정리"
 ## 12단계. README 작성 → 최종 push
 
 1. 이 문서의 **Part A** 항목을 내 주제에 맞게 고쳐 씁니다.
-2. 실행 화면을 캡처해서 `docs/screenshots/`에 저장합니다. (`dev_env.png`, `menu.png`, `play.png`, `add_quiz.png`, `list.png`, `score.png`, `git_graph.png`)
+2. 실행 화면을 캡처해서 `docs/screenshots/`에 저장합니다. (`dev_env.png`, `menu.png`, `play.png`, `add_quiz.png`, `list.png`, `score.png`, `git_graph.png`, 보너스: `hint.png`, `delete.png`)
    - Windows 캡처 단축키: `Win + Shift + S`
 
 ```bash
